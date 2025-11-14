@@ -5,7 +5,7 @@
       
       <!-- Logo -->
       <RouterLink to="/" class="text-xl font-bold text-blue-600">
-        MyVueApp
+        My Vue App
       </RouterLink>
 
       <!-- Menu Desktop -->
