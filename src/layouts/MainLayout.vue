@@ -15,7 +15,7 @@
         to="/"
         class="py-2 border-b hover:text-blue-600 transition"
       >
-        Home
+        Início
       </RouterLink>
 
       <RouterLink
