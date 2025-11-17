@@ -5,13 +5,13 @@
     <div class="bg-white rounded-xl shadow-sm border p-8 md:p-10 flex flex-col gap-6 md:flex-row md:items-center">
       <div class="flex-1 space-y-4">
         <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
-          Meu primeiro projeto Vue 3 + Tailwind,
+          Meu primeiro projeto Vue 3 + Tailwind + MongoDB,
           <span class="text-blue-600">organizado e pronto pra crescer.</span>
         </h2>
 
         <p class="text-gray-600 text-lg leading-relaxed">
           Esta é a base de um site clássico e responsivo, com layout limpo, navegação clara
-          e estrutura profissional. A partir daqui dá para encaixar páginas reais, integração
+          e estrutura profissional. Já está tudo encaixado, páginas reais, integração
           com APIs e MongoDB, autenticação e tudo mais que um projeto moderno precisa.
         </p>
 
@@ -37,7 +37,7 @@
           class="h-40 md:h-48 rounded-xl bg-gradient-to-br from-blue-600 via-sky-500 to-teal-400 flex items-center justify-center text-white font-semibold text-lg shadow-md"
         >
           <span class="text-center px-4">
-            Vue 3 • Vite • Tailwind<br />
+            Vue 3 • Vite • Tailwind • MongoDB<br />
             Arquitetura limpa e escalável
           </span>
         </div>
@@ -51,7 +51,7 @@
       </h3>
       <p class="text-gray-600">
         A ideia aqui é ter uma base sólida, como se fosse o esqueleto de um site institucional
-        ou de um painel simples, pronto para receber funcionalidades reais.
+        ou de um painel simples, pronto para funcionalidades reais.
       </p>
 
       <div class="grid gap-6 md:grid-cols-3">

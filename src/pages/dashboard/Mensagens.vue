@@ -3,24 +3,19 @@
   <section class="space-y-8">
     <!-- 🔹 Cabeçalho da página -->
     <div class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
-        <!-- Pequeto “badge” dizendo que é área restrita -->
-        <span>Área administrativa</span>
-      </div>
-
       <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">
         Mensagens recebidas
       </h2>
 
       <p class="text-gray-600 leading-relaxed">
         Este painel lista as mensagens enviadas pelo formulário de contato,
-        atualmente armazenadas no <strong>localStorage</strong>. Em um cenário
-        real, esses dados viriam de uma API conectada a um banco como o MongoDB.
+        agora armazenadas no <strong>MongoDB</strong>. Aqui você pode visualizar
+        e gerenciar (inclusive excluir) os registros.
       </p>
 
       <p class="text-gray-500 text-sm">
-        Use esta tela como base para um painel administrativo simples, com
-        filtros, paginação ou detalhes de cada mensagem no futuro.
+        Esta tela pode evoluir para um painel administrativo completo com filtros,
+        paginação, visualização detalhada e muito mais.
       </p>
     </div>
 
@@ -42,17 +37,31 @@
 
     <!-- 🔹 Lista de mensagens -->
     <div v-else class="space-y-4">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-4">
         <h3 class="text-lg font-semibold text-gray-900">
           Total de mensagens: {{ messages.length }}
         </h3>
         <button
           type="button"
-          class="text-sm text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline cursor-pointer"
+          class="text-sm text-blue-600 hover:text-blue-700 underline-offset-2 hover:underline"
           @click="reload"
         >
           Recarregar
         </button>
+      </div>
+
+      <!-- 🔹 Área de feedback global de erro/sucesso -->
+      <div v-if="feedbackMessage" class="space-y-2">
+        <div
+          :class="[
+            'rounded-lg px-4 py-3 text-sm',
+            feedbackType === 'error'
+              ? 'bg-red-50 border border-red-200 text-red-800'
+              : 'bg-green-50 border border-green-200 text-green-800',
+          ]"
+        >
+          {{ feedbackMessage }}
+        </div>
       </div>
 
       <!-- 🔹 Grid de cards (um por mensagem) -->
@@ -82,88 +91,95 @@
             {{ msg.message }}
           </p>
 
-          <!-- Rodapé do card: data -->
-          <footer class="mt-2 text-xs text-gray-500 flex items-center justify-between">
+          <!-- Rodapé do card: data + ações -->
+          <footer
+            class="mt-2 text-xs text-gray-500 flex items-center justify-between gap-3"
+          >
             <span>
               Enviado em:
               <strong>{{ formatDate(msg.createdAt) }}</strong>
             </span>
-            <span class="text-[10px] uppercase tracking-wide text-gray-400">
-              ID: {{ msg.id }}
-            </span>
+
+            <div class="flex items-center gap-2">
+              <!-- ID em formato pequeno -->
+              <span class="hidden md:inline text-[10px] uppercase tracking-wide text-gray-400">
+                ID: {{ msg.id }}
+              </span>
+
+              <!-- 🔹 Botão de excluir -->
+              <button
+                type="button"
+                class="text-[11px] font-semibold text-red-600 hover:text-red-700 border border-red-200 rounded px-2 py-1 hover:bg-red-50 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                :disabled="isDeletingId === msg.id"
+                @click="handleDelete(msg.id)"
+              >
+                <span v-if="isDeletingId === msg.id">Excluindo...</span>
+                <span v-else>Excluir</span>
+              </button>
+            </div>
           </footer>
         </article>
       </div>
     </div>
   </section>
-
-    <RouterLink
-    to="/dashboard/index"
-    class="inline-flex items-center gap-2 px-4 py-2 mt-5 rounded-lg bg-blue-600 border border-gray-300 text-white text-sm font-medium hover:bg-blue-800 hover:border-gray-400 transition shadow-sm"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-4 w-4"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path
-        fill-rule="evenodd"
-        d="M7.707 14.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L4.414 8H18a1 1 0 110 2H4.414l3.293 3.293a1 1 0 010 1.414z"
-        clip-rule="evenodd"
-      />
-    </svg>
-    <span>Voltar para o painel</span>
-  </RouterLink>
-
-
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-// 🔹 Importamos o serviço que lê as mensagens do localStorage
-import { listContactMessages } from '../../services/messagesService'
+// 🔹 Importamos os serviços que falam com a API (Node + MongoDB)
+import {
+  listContactMessages,
+  deleteContactMessage,
+} from '../../services/messagesService'
 
-// Estado reativo para lista de mensagens
+// Lista de mensagens carregadas da API
 const messages = ref([])
 
-// Estado de carregamento
+// Estado de carregamento inicial
 const isLoading = ref(false)
 
+// ID da mensagem que está sendo excluída (para mostrar "Excluindo...")
+const isDeletingId = ref(null)
+
+// Feedback global (sucesso/erro)
+const feedbackMessage = ref('')
+const feedbackType = ref('success') // 'success' | 'error'
+
 /**
- * 🔹 Função responsável por buscar as mensagens
- *    usando o serviço de front (que hoje fala com localStorage).
+ * 🔹 Busca mensagens no backend (GET /api/contact)
  */
 async function fetchMessages() {
   isLoading.value = true
+  feedbackMessage.value = ''
+
   try {
     const response = await listContactMessages()
-    // Esperamos que o serviço devolva { ok: true, data: [...] }
+    // Esperamos { ok: true, data: [...] }
     messages.value = response?.data || []
   } catch (error) {
     console.error('Erro ao carregar mensagens:', error)
     messages.value = []
+    feedbackType.value = 'error'
+    feedbackMessage.value =
+      error?.message || 'Erro ao carregar mensagens. Tente novamente.'
   } finally {
     isLoading.value = false
   }
 }
 
 /**
- * 🔹 Função exposta para o botão "Recarregar",
- *    apenas chama novamente o fetch.
+ * 🔹 Função pública (ligada ao botão "Recarregar").
  */
 async function reload() {
   await fetchMessages()
 }
 
 /**
- * 🔹 Formatador simples de data, deixando legível
- *    a string ISO que salvamos ao criar a mensagem.
+ * 🔹 Formata a data para exibição legível (dd/mm/aaaa hh:mm).
  */
-function formatDate(isoString) {
-  if (!isoString) return 'Data não informada'
-  const date = new Date(isoString)
-  // Ex.: 17/11/2025 10:32
+function formatDate(value) {
+  if (!value) return 'Data não informada'
+  const date = new Date(value)
   return date.toLocaleString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -171,6 +187,41 @@ function formatDate(isoString) {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+/**
+ * 🔹 Exclui uma mensagem específica:
+ *   - Pede confirmação ao usuário
+ *   - Chama DELETE /api/contact/:id
+ *   - Atualiza o array local removendo o item
+ */
+async function handleDelete(id) {
+  feedbackMessage.value = ''
+
+  const confirmed = window.confirm(
+    'Tem certeza que deseja excluir esta mensagem?',
+  )
+  if (!confirmed) return
+
+  isDeletingId.value = id
+
+  try {
+    const response = await deleteContactMessage(id)
+    // Esperamos { ok: true, message: '...' }
+    feedbackType.value = 'success'
+    feedbackMessage.value =
+      response?.message || 'Mensagem excluída com sucesso.'
+
+    // 🔹 Remove a mensagem do array sem precisar recarregar tudo
+    messages.value = messages.value.filter((msg) => msg.id !== id)
+  } catch (error) {
+    console.error('Erro ao excluir mensagem:', error)
+    feedbackType.value = 'error'
+    feedbackMessage.value =
+      error?.message || 'Erro ao excluir mensagem. Tente novamente.'
+  } finally {
+    isDeletingId.value = null
+  }
 }
 
 // 🔹 Quando o componente monta, carregamos as mensagens

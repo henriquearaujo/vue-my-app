@@ -8,7 +8,7 @@
       </h2>
 
       <p class="text-gray-600 text-lg leading-relaxed">
-        Este projeto nasceu como um laboratório para explorar Vue 3 com Vite e TailwindCSS,
+        Este projeto nasceu como um laboratório para explorar Vue 3 com Vite, TailwindCSS e MongoDB,
         seguindo uma arquitetura semelhante à usada em aplicações reais de mercado.
         A ideia é ter um esqueleto limpo, organizado e escalável, pronto para receber
         novas funcionalidades com segurança.
