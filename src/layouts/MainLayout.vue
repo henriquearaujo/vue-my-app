@@ -29,9 +29,17 @@
       <RouterLink
         @click="closeMenu"
         to="/contato"
-        class="py-2 hover:text-blue-600 transition"
+        class="py-2 border-b hover:text-blue-600 transition"
       >
         Contato
+      </RouterLink>
+
+      <RouterLink
+        @click="closeMenu"
+        to="/dashboard/index"
+        class="py-2 hover:text-blue-600 transition"
+      >
+        Painel Admin
       </RouterLink>
     </div>
 

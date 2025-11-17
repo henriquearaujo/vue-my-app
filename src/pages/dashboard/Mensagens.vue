@@ -3,6 +3,11 @@
   <section class="space-y-8">
     <!-- 🔹 Cabeçalho da página -->
     <div class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+        <!-- Pequeto “badge” dizendo que é área restrita -->
+        <span>Área administrativa</span>
+      </div>
+
       <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">
         Mensagens recebidas
       </h2>
@@ -91,12 +96,33 @@
       </div>
     </div>
   </section>
+
+    <RouterLink
+    to="/dashboard/index"
+    class="inline-flex items-center gap-2 px-4 py-2 mt-5 rounded-lg bg-blue-600 border border-gray-300 text-white text-sm font-medium hover:bg-blue-800 hover:border-gray-400 transition shadow-sm"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-4 w-4"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M7.707 14.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L4.414 8H18a1 1 0 110 2H4.414l3.293 3.293a1 1 0 010 1.414z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <span>Voltar para o painel</span>
+  </RouterLink>
+
+
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 // 🔹 Importamos o serviço que lê as mensagens do localStorage
-import { listContactMessages } from '../services/messagesService'
+import { listContactMessages } from '../../services/messagesService'
 
 // Estado reativo para lista de mensagens
 const messages = ref([])
