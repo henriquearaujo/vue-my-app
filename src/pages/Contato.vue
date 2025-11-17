@@ -1,38 +1,46 @@
 <!-- src/pages/Contato.vue -->
 <template>
   <section class="space-y-8 max-w-2xl">
-    <!-- Texto introdutório -->
+    <!-- 🔹 Cabeçalho e explicação -->
     <div class="space-y-3">
       <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">
         Contato
       </h2>
 
       <p class="text-gray-600 text-lg leading-relaxed">
-        Este formulário ainda é apenas um exemplo, mas já está estruturado como se falasse
-        com uma API real — que poderia salvar os dados no MongoDB ou enviar um e-mail.
+        Este formulário está estruturado como se conversasse com uma API real,
+        mas por enquanto estamos apenas salvando os dados no
+        <strong>localStorage</strong>, simulando uma integração.
       </p>
 
       <p class="text-gray-600 leading-relaxed text-sm">
-        Ao enviar, os dados são mandados para um serviço de front-end (`messagesService`)
-        que conversa com um endpoint <code>/api/contact</code>. No momento, você pode
-        apontar esse endpoint para um back-end em Node ou serverless quando quiser.
+        No futuro, podemos apontar essa mesma lógica para um endpoint real
+        (por exemplo <code>/api/contact</code>) que grave os dados em um
+        banco MongoDB — sem precisar reescrever a página.
       </p>
     </div>
 
-    <!-- Mensagens de feedback -->
-    <div v-if="successMessage" class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+    <!-- 🔹 Mensagens de feedback visual (sucesso/erro) -->
+    <div
+      v-if="successMessage"
+      class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+    >
       {{ successMessage }}
     </div>
 
-    <div v-if="errorMessage" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+    <div
+      v-if="errorMessage"
+      class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+    >
       {{ errorMessage }}
     </div>
 
-    <!-- Formulário -->
+    <!-- 🔹 Formulário de contato -->
     <form
       class="space-y-5 bg-white border rounded-xl shadow-sm p-6 md:p-8"
       @submit.prevent="handleSubmit"
     >
+      <!-- Campo: Nome -->
       <div class="space-y-1">
         <label class="block text-gray-800 font-medium text-sm">
           Nome
@@ -46,6 +54,7 @@
         />
       </div>
 
+      <!-- Campo: E-mail -->
       <div class="space-y-1">
         <label class="block text-gray-800 font-medium text-sm">
           E-mail
@@ -59,6 +68,7 @@
         />
       </div>
 
+      <!-- Campo: Assunto -->
       <div class="space-y-1">
         <label class="block text-gray-800 font-medium text-sm">
           Assunto
@@ -72,6 +82,7 @@
         />
       </div>
 
+      <!-- Campo: Mensagem -->
       <div class="space-y-1">
         <label class="block text-gray-800 font-medium text-sm">
           Mensagem
@@ -84,6 +95,7 @@
         ></textarea>
       </div>
 
+      <!-- 🔹 Botão + texto auxiliar -->
       <div class="flex items-center justify-between gap-4 flex-wrap">
         <button
           type="submit"
@@ -95,7 +107,7 @@
         </button>
 
         <p class="text-xs text-gray-500">
-          No momento, este formulário é apenas demonstrativo.
+          No momento, os dados são salvos apenas no seu navegador (localStorage).
         </p>
       </div>
     </form>
@@ -104,8 +116,10 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+// 🔹 Importamos o serviço que abstrai o “meio de transporte” (localStorage agora, API no futuro)
 import { sendContactMessage } from '../services/messagesService'
 
+// Estado reativo do formulário
 const form = reactive({
   name: '',
   email: '',
@@ -113,27 +127,34 @@ const form = reactive({
   message: '',
 })
 
+// Estados de controle de envio e feedback
 const isSubmitting = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
 
+// 🔹 Função chamada no submit do formulário
 async function handleSubmit() {
+  // Limpa mensagens anteriores
   successMessage.value = ''
   errorMessage.value = ''
   isSubmitting.value = true
 
   try {
-    // Aqui a chamada é real – a API que precisa existir depois
-    await sendContactMessage({ ...form })
+    // Envia para o serviço (atualmente: grava no localStorage)
+    const response = await sendContactMessage({ ...form })
 
-    successMessage.value = 'Mensagem enviada com sucesso! (Simulação de API)'
-    // Limpa o formulário
+    // Exibe mensagem de sucesso amigável
+    successMessage.value =
+      response?.message || 'Mensagem enviada e salva localmente com sucesso!'
+
+    // Limpa campos do formulário
     form.name = ''
     form.email = ''
     form.subject = ''
     form.message = ''
   } catch (error) {
     console.error(error)
+    // Caso algum erro interno ocorra, mostramos uma mensagem genérica
     errorMessage.value =
       error?.message || 'Não foi possível enviar a mensagem. Tente novamente.'
   } finally {

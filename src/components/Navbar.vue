@@ -12,7 +12,9 @@
       <ul class="hidden md:flex gap-6 font-medium text-gray-700">
         <li><RouterLink to="/" class="hover:text-blue-600 transition">Início</RouterLink></li>
         <li><RouterLink to="/sobre" class="hover:text-blue-600 transition">Sobre</RouterLink></li>
+        <li><RouterLink to="/mensagens" class="hover:text-blue-600 transition">Mensagens</RouterLink></li>
         <li><RouterLink to="/contato" class="hover:text-blue-600 transition">Contato</RouterLink></li>
+        
       </ul>
 
       <!-- Botão mobile -->
