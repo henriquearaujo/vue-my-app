@@ -7,7 +7,7 @@ Um projeto fullstack moderno usando:
 - 🎨 **TailwindCSS v4**
 - 🧭 **Vue Router**
 - 🗄️ **Node/Express**
-- 🍃 **MongoDB Atlas**
+- 🍃 **MongoDB Atlas** (atualmente expirou por falta de uso)
 - 🚀 **PNPM** (como gerenciador preferencial)
 
 Inclui:
